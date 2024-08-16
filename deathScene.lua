@@ -1,8 +1,11 @@
 local DeathScene = {}
+local Button = require "button"
 DeathScene.__index = DeathScene
 
 function DeathScene:load()
-    -- Initialize death scene
+    self.startButton = Button:new("Start Game", (VIRTUAL_WIDTH/2)-100, (VIRTUAL_HEIGHT/2)-25, 200, 50, function()
+        stateManager:switch('game')
+    end)
 end
 
 function DeathScene:update(dt)
@@ -11,6 +14,7 @@ end
 
 function DeathScene:draw()
     love.graphics.print("You Died - Press Enter to Restart", 100, 100)
+    self.startButton:draw()
 end
 
 function DeathScene:keypressed(key)
@@ -19,4 +23,7 @@ function DeathScene:keypressed(key)
     end
 end
 
+function DeathScene:mousepressed(x, y)
+    self.startButton:click(x, y)
+end
 return DeathScene

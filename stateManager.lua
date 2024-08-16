@@ -39,5 +39,9 @@ function StateManager:keypressed(key)
         self.current:keypressed(key)
     end
 end
-
+function StateManager:mousepressed(x, y, button)
+    if self.current and self.current.mousepressed then
+        self.current:mousepressed(x, y, button)
+    end
+end
 return StateManager

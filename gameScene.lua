@@ -6,9 +6,7 @@ GameScene.__index = GameScene
 function GameScene:load()
     -- Initialize game scene
     love.window.setFullscreen(false)
-    VIRTUAL_WIDTH = love.graphics.getWidth()
-    VIRTUAL_HEIGHT = love.graphics.getHeight()
-    love.graphics.setDefaultFilter("nearest", "nearest")
+
     bird = Bird:new()
     obstacles = {}
     for i = 1, 3 do
@@ -46,4 +44,7 @@ function GameScene:keypressed(key)
     end
 end
 
+function GameScene:mousepressed(x, y)
+    -- Placeholder for mousepressed in game scene
+end
 return GameScene
