@@ -16,7 +16,7 @@ function Obstacle:init(pos, isTop, pairedObstacle)
     self.offsetX = 28 * PIXEL_SCALE 
     self.offsetY = self.isTop and -1 * self.height or 1
 
-    self.speed = 500
+    self.speed = 200
 
     self.x = pos
     self.y = self.isTop and love.math.random(-self.height,-self.height+VIRTUAL_HEIGHT-GAP_HEIGHT) or (self.pairedObstacle.y + self.pairedObstacle.height + GAP_HEIGHT)

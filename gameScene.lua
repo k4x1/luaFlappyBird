@@ -1,4 +1,6 @@
 local GameScene = {}
+local Bird = require "bird"
+local Obstacle = require "obstacle"
 GameScene.__index = GameScene
 
 function GameScene:load()
@@ -30,11 +32,12 @@ end
 
 function GameScene:draw()
     love.graphics.setBackgroundColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1, 1)
     bird:render()
     for _, obstacle in ipairs(obstacles) do
         obstacle:render()
     end
-    drawCollisionBoxes()
+
 end
 
 function GameScene:keypressed(key)

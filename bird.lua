@@ -2,8 +2,8 @@ Bird = {}
 Bird.__index = Bird
 require "obstacle"
 local GRAVITY = 20
-local JUMP_VELOCITY = -10
-local PIXEL_SCALE = 0.25
+local JUMP_VELOCITY = -7
+local PIXEL_SCALE = 0.2
 function AABB(a, b)
     io.write("abc")
     return a.x < b.x + b.width and
