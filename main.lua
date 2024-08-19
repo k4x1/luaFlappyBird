@@ -4,18 +4,18 @@ local MainMenu = require "mainMenu"
 local GameScene = require "gameScene"
 local DeathScene = require "deathScene"
 local Button = require "button"
+
 function love.load()
     stateManager = StateManager:new()
     stateManager:add('mainMenu', MainMenu)
     stateManager:add('game', GameScene)
     stateManager:add('death', DeathScene)
     stateManager:switch('mainMenu')
+ --   effect = love.graphics.newShader("shader.ps")   
 end
 
 function love.update(dt)
     stateManager:update(dt)
-
-
 end
 
 function love.draw()

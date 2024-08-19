@@ -5,7 +5,6 @@ local GRAVITY = 20
 local JUMP_VELOCITY = -7
 local PIXEL_SCALE = 0.2
 function AABB(a, b)
-    io.write("abc")
     return a.x < b.x + b.width and
            a.x + a.width > b.x and
            a.y < b.y + b.height and
@@ -45,7 +44,7 @@ function Bird:new()
 end
 function Bird:CheckCollision(obstacles)
   
-    local birdBox = {x = self.x, y = self.y, width = self.width*14, height = self.height*14}
+    local birdBox = {x = self.x+self.width*5, y = self.y+self.height*5, width = self.width*5, height = self.height*5}
     for _, obstacle in ipairs(obstacles) do
 
         local obstacleBox = {x = obstacle.x, y = obstacle.y, width = obstacle.width, height = obstacle.height}

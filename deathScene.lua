@@ -15,6 +15,8 @@ end
 function DeathScene:draw()
     love.graphics.print("You Died - Press Enter to Restart", 100, 100)
     self.startButton:draw()
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.print("Score: " .. Score, 10, 10)
 end
 
 function DeathScene:keypressed(key)

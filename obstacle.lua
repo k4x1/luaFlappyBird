@@ -16,27 +16,29 @@ function Obstacle:init(pos, isTop, pairedObstacle)
     self.offsetX = 28 * PIXEL_SCALE 
     self.offsetY = self.isTop and -1 * self.height or 1
 
-    self.speed = 200
+    self.speed = 150
 
     self.x = pos
     self.y = self.isTop and love.math.random(-self.height,-self.height+VIRTUAL_HEIGHT-GAP_HEIGHT) or (self.pairedObstacle.y + self.pairedObstacle.height + GAP_HEIGHT)
 
+    self.passed = false;
 end
 
 function Obstacle:update(dt)
-    self.x = self.x - (self.speed * dt)
+    self.x = self.x - (self.speed * dt * (1+(Score/50)))
     if self.x < 0 then
         self.x = VIRTUAL_WIDTH
         self.y = self.isTop and love.math.random(-self.height,-self.height+VIRTUAL_HEIGHT-GAP_HEIGHT) or (self.pairedObstacle.y + self.pairedObstacle.height + GAP_HEIGHT)
+        self.passed = false
     end
 end
 
 function Obstacle:render()
     if self.isTop then 
-        love.graphics.setColor(1, 0, 0, 1)
+
         love.graphics.draw(self.image, self.x + self.width , self.y+self.height, 3.14, PIXEL_SCALE, PIXEL_SCALE)
     else
-        love.graphics.setColor(0, 1, 0, 1)
+
         love.graphics.draw(self.image, self.x, self.y, 0, PIXEL_SCALE, PIXEL_SCALE)
     end
    
