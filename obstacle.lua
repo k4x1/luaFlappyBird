@@ -19,19 +19,24 @@ function Obstacle:init(pos, isTop, pairedObstacle)
     self.speed = 150
 
     self.x = pos
-    self.y = self.isTop and love.math.random(-self.height,-self.height+VIRTUAL_HEIGHT-GAP_HEIGHT) or (self.pairedObstacle.y + self.pairedObstacle.height + GAP_HEIGHT)
+    self.y = self.isTop and love.math.random(-self.height,-self.height+VIRTUAL_HEIGHT-GAP_HEIGHT) or (self.pairedObstacle.y + self.height + GAP_HEIGHT)
 
     self.passed = false;
 end
 
 function Obstacle:update(dt)
-    self.x = self.x - (self.speed * dt * (1+(Score/50)))
+    self.x = self.x - (self.speed * dt * (1 + (Score / 50)))
     if self.x < 0 then
         self.x = VIRTUAL_WIDTH
-        self.y = self.isTop and love.math.random(-self.height,-self.height+VIRTUAL_HEIGHT-GAP_HEIGHT) or (self.pairedObstacle.y + self.pairedObstacle.height + GAP_HEIGHT)
+        if self.isTop then
+            self.y = love.math.random(-self.height, -self.height + VIRTUAL_HEIGHT - GAP_HEIGHT)
+        else
+            self.y = self.pairedObstacle.y + self.height + GAP_HEIGHT
+        end
         self.passed = false
     end
 end
+
 
 function Obstacle:render()
     if self.isTop then 

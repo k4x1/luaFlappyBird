@@ -19,7 +19,7 @@ function GameScene:load()
 end
 function drawCollisionBoxes()
     love.graphics.setColor(0, 1, 0, 1)
-    love.graphics.rectangle("line", bird.x+bird.width*5, bird.y+bird.height*5, bird.width*5, bird.height*5)
+    love.graphics.rectangle("line", bird.x+(bird.width*5)/4, bird.y+bird.height*5/4, bird.width*5/4, bird.height*5/4)
 
     love.graphics.setColor(1, 0, 0, 1) 
     for _, obstacle in ipairs(obstacles) do
@@ -43,13 +43,13 @@ function GameScene:update(dt)
 end
 
 function GameScene:draw()
-    love.graphics.setBackgroundColor(255, 255, 255)
+    love.graphics.setBackgroundColor(0.5, 0.5, 0.5)
     love.graphics.setColor(1, 1, 1, 1)
     bird:render()
     for _, obstacle in ipairs(obstacles) do
         obstacle:render()
     end
-    drawCollisionBoxes()
+  --  drawCollisionBoxes()
 
     love.graphics.setColor(0, 0, 0, 1)
     love.graphics.print("Score: " .. Score, 10, 10)
