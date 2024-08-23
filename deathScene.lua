@@ -7,18 +7,18 @@ local highScores = {}
 local function loadHighScores()
     local file = love.filesystem.read("highscores.lua")
     if file then
-        io.write("File content: ", file)  -- Debugging: Print file content
+        io.write("File content: ", file, "\n")  -- Debugging: Print file content
         local chunk, err = loadstring(file)
         if chunk then
             local loadedScores = chunk()
-            io.write("Loaded scores type: ", type(loadedScores))  -- Debugging: Print type of loadedScores
+            io.write("Loaded scores type: ", type(loadedScores), "\n")  -- Debugging: Print type of loadedScores
             if type(loadedScores) == "table" then
                 highScores = loadedScores
             else
                 highScores = {0, 0, 0, 0, 0}
             end
         else
-            io.write("Error loading chunk: ", err)  -- Debugging: Print error if chunk loading fails
+            io.write("Error loading chunk: ", err, "\n")  -- Debugging: Print error if chunk loading fails
             highScores = {0, 0, 0, 0, 0}
         end
     else
@@ -35,7 +35,13 @@ local function saveHighScores()
         end
     end
     scoresString = scoresString .. "}"
-    love.filesystem.write("highscores.lua", scoresString)
+    io.write("Saving scores: ", scoresString, "\n")  -- Debugging: Print the string being saved
+    local success, message = love.filesystem.write("highscores.lua", scoresString)
+    if not success then
+        io.write("Error writing file: ", message, "\n")  -- Debugging: Print error if file writing fails
+    else
+        io.write("File written successfully\n")  -- Debugging: Confirm file writing success
+    end
 end
 
 local function updateHighScores(newScore)
@@ -51,6 +57,7 @@ function DeathScene:load()
     self.startButton = Button:new("Start Game", (VIRTUAL_WIDTH/2)-100, (VIRTUAL_HEIGHT/2)-25, 200, 50, function()
         stateManager:switch('game')
     end)
+   
     loadHighScores()
 end
 
@@ -77,11 +84,16 @@ function DeathScene:keypressed(key)
 end
 
 function DeathScene:mousepressed(x, y)
+    updateHighScores(Score);
     self.startButton:click(x, y)
 end
 
 function DeathScene:enter()
-    updateHighScores(Score)
+    updateHighScores(Score);
+end
+
+function love.quit()
+    saveHighScores()
 end
 
 return DeathScene
