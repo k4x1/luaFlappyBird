@@ -54,10 +54,23 @@ local function updateHighScores(newScore)
 end
 
 function DeathScene:load()
-    self.startButton = Button:new("Start Game", (VIRTUAL_WIDTH/2)-100, (VIRTUAL_HEIGHT/2)-25, 200, 50, function()
+    -- Load background image
+    self.backgroundImage = love.graphics.newImage("background.png")
+
+    -- Load custom fonts
+    self.titleFont = love.graphics.newFont("figmaFont.otf", math.min(VIRTUAL_WIDTH, VIRTUAL_HEIGHT) / 10)
+    self.buttonFont = love.graphics.newFont("figmaFont.otf", math.min(VIRTUAL_WIDTH, VIRTUAL_HEIGHT) / 20)
+
+    -- Create start button
+    self.startButton = Button:new("START", VIRTUAL_WIDTH - 300, VIRTUAL_HEIGHT / 2, 200, 50, function()
         stateManager:switch('game')
     end)
-   
+
+    -- Create save score button
+    self.saveScoreButton = Button:new("SAVE "..Score, VIRTUAL_WIDTH - 300, VIRTUAL_HEIGHT / 2 + 60, 200, 50, function()
+        updateHighScores(Score)
+    end)
+
     loadHighScores()
 end
 
@@ -66,15 +79,46 @@ function DeathScene:update(dt)
 end
 
 function DeathScene:draw()
-    love.graphics.print("You Died - Press Enter to Restart", 100, 100)
-    self.startButton:draw()
-    love.graphics.setColor(0, 0, 0, 1)
-    love.graphics.print("Score: " .. Score, 10, 10)
+    love.graphics.setBackgroundColor(0.239, 0.533, 0.659)
 
-    love.graphics.print("High Scores:", 100, 150)
+    -- Calculate scaling factors to reduce the background size
+    local scaleX = 0.5  -- Scale down to 50% of the original width
+    local scaleY = 0.5  -- Scale down to 50% of the original height
+
+    -- Calculate the position to center the scaled background
+    local bgX = (VIRTUAL_WIDTH - self.backgroundImage:getWidth() * scaleX) / 2
+    local bgY = (VIRTUAL_HEIGHT - self.backgroundImage:getHeight() * scaleY) / 2
+
+    -- Draw background image with scaling
+    love.graphics.setColor(1, 1, 1, 0.5)
+    love.graphics.draw(self.backgroundImage, bgX, bgY, 0, scaleX, scaleY)
+
+    -- Draw title
+    love.graphics.setFont(self.titleFont)
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.printf("HIGHSCORES", 0, 50, VIRTUAL_WIDTH, "center")
+
+    -- Draw high scores on the left
+    local scoreBoxWidth = 200
+    local scoreBoxHeight = 300
+    local scoreBoxX = 50
+    local scoreBoxY = (VIRTUAL_HEIGHT / 2) - scoreBoxHeight / 2
+
+    love.graphics.setColor(0.5, 0.8, 0.5)
+    love.graphics.rectangle("fill", scoreBoxX, scoreBoxY, scoreBoxWidth, scoreBoxHeight)
+
+    love.graphics.setFont(self.buttonFont)
+    love.graphics.setColor(1, 1, 1)
+    local labels = {"st", "nd", "rd", "th", "th"}
     for i, score in ipairs(highScores) do
-        love.graphics.print(i .. ". " .. score, 100, 150 + i * 20)
+        love.graphics.printf(i .. labels[i].."-" .. score, scoreBoxX, scoreBoxY + (i - 1) * 40 + 20, scoreBoxWidth, "center")
     end
+
+    -- Draw start button on the right
+    self.startButton:draw()
+
+    -- Draw save score button on the right
+    self.saveScoreButton:draw()
 end
 
 function DeathScene:keypressed(key)
@@ -84,12 +128,17 @@ function DeathScene:keypressed(key)
 end
 
 function DeathScene:mousepressed(x, y)
-    updateHighScores(Score);
     self.startButton:click(x, y)
+    self.saveScoreButton:click(x, y)
+end 
+
+function DeathScene:touchpressed(x, y)
+    self.startButton:click(x, y)
+    self.saveScoreButton:click(x, y)
 end
 
 function DeathScene:enter()
-    updateHighScores(Score);
+    updateHighScores(Score)
 end
 
 function love.quit()

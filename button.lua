@@ -16,9 +16,9 @@ function Button:new(text, x, y, width, height, callback)
 end
 
 function Button:draw()
-    love.graphics.setColor(0, 200, 255, 255)
+    love.graphics.setColor(0.498, 0.725, 0.322)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
-    love.graphics.setColor(0, 0, 0, 255)
+    love.graphics.setColor(1, 1, 1, 255)
     love.graphics.print(self.text, self.x + (self.width / 4), self.y + (self.height / 4))
 end
 

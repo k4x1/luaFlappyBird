@@ -4,6 +4,7 @@ require "obstacle"
 local GRAVITY = 20
 local JUMP_VELOCITY = -7
 local PIXEL_SCALE = 4
+
 function AABB(a, b)
     return a.x < b.x + b.width and
            a.x + a.width > b.x and
@@ -13,7 +14,7 @@ end
 
 function Bird:init()
     self.image = love.graphics.newImage('bird_spritesheet.png')
-    self.width = (self.image:getWidth()/4)
+    self.width = (self.image:getWidth() / 4)
     self.height = (self.image:getHeight())
 
     self.origin = {self.width / 2, self.height / 2}
@@ -30,22 +31,24 @@ function Bird:init()
     self.animationTimer = 0
     self.animationDuration = 0.1
 
-        -- Load particle image and create particle system
     local particleImage = love.graphics.newImage('particle.png')
     self.pSystem = love.graphics.newParticleSystem(particleImage, 320)
-    self.pSystem:setParticleLifetime(0.3, 0.8)  -- Particles live between 0.5 and 1 second
-    self.pSystem:setLinearAcceleration(-400, 0, 0, 400)  -- Random movement in all directions
-    self.pSystem:setSpeed(-200,0)
-  
+    self.pSystem:setParticleLifetime(0.3, 0.8)
+    self.pSystem:setLinearAcceleration(-400, 0, 0, 400)
+    self.pSystem:setSpeed(-200, 0)  
+
     self.pSystem:setSizes(0.1, 0.1)
-    self.pSystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) 
+    self.pSystem:setColors(1, 1, 1, 1, 1, 1, 1, 0)
+
+    self.jumpSound = love.audio.newSource("jump.mp3", "static")
+    
 end
 
 function Bird:update(dt)
     self.dy = self.dy + GRAVITY * dt
     self.y = self.y + self.dy
     self.animationTimer = self.animationTimer + dt
-    if self.animationTimer >= self.animationDuration and self.currentFrame <4 then
+    if self.animationTimer >= self.animationDuration and self.currentFrame < 4 then
         self.animationTimer = self.animationTimer - self.animationDuration
         self.currentFrame = self.currentFrame % #self.frames + 1
     end
@@ -56,8 +59,12 @@ function Bird:jump()
     self.dy = JUMP_VELOCITY
     self.currentFrame = 1
     self.animationTimer = 0
-    self.pSystem:setPosition(self.x + self.width*2, self.y + self.height)
+    self.pSystem:setPosition(self.x + self.width * 2, self.y + self.height)
     self.pSystem:emit(32)
+    self.jumpSound:stop()
+    local pitch = love.math.random(7, 12) / 10 
+    self.jumpSound:setPitch(pitch)
+    self.jumpSound:play()
 end
 
 function Bird:render()
@@ -65,18 +72,15 @@ function Bird:render()
     love.graphics.draw(self.image, self.frames[self.currentFrame], self.x, self.y, 0, PIXEL_SCALE, PIXEL_SCALE)
 end
 
-
-
 function Bird:new()
     local me = setmetatable({}, Bird)
     me:init()
     return me
 end
-function Bird:CheckCollision(obstacles)
-  
-    local birdBox = {x = self.x+(self.width*5)/4, y = self.y+self.height*5/4, width = self.width*5/4, height = self.height*5/4}
-    for _, obstacle in ipairs(obstacles) do
 
+function Bird:CheckCollision(obstacles)
+    local birdBox = {x = self.x + (self.width * 5) / 4, y = self.y + self.height * 5 / 4, width = self.width * 5 / 4, height = self.height * 5 / 4}
+    for _, obstacle in ipairs(obstacles) do
         local obstacleBox = {x = obstacle.x, y = obstacle.y, width = obstacle.width, height = obstacle.height}
         if AABB(birdBox, obstacleBox) then
             return true
@@ -84,4 +88,5 @@ function Bird:CheckCollision(obstacles)
     end
     return false
 end
+
 return Bird

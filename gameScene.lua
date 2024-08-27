@@ -17,19 +17,23 @@ function GameScene:load()
     end
     Score = 0
 
-    -- Load fisheye shader
-    self.fishEye = love.graphics.newShader("fisheye.glsl")
-
     self.blurShader = love.graphics.newShader("blur.glsl")
-    self.blurShader:send("radius",0.0005);
-
-    self.edgeShader = love.graphics.newShader("edge.glsl")
-    self.edgeShader:send("texSize", {VIRTUAL_WIDTH, VIRTUAL_HEIGHT})
-
-    self.chromaticAberrationShader = love.graphics.newShader("chromaticAberration.glsl")
-    self.chromaticAberrationShader:send("aberrationAmount", 0.01);
+    self.blurRadius = 0.02 
+    self.blurDecreasing  = true
+    -- Load shaders
+    -- self.fishEye = love.graphics.newShader("fisheye.glsl")
+    -- self.blurShader = love.graphics.newShader("blur.glsl")
+    -- self.blurShader:send("radius", 0.0005)
+    -- self.edgeShader = love.graphics.newShader("edge.glsl")
+    -- self.edgeShader:send("texSize", {VIRTUAL_WIDTH, VIRTUAL_HEIGHT})
+     self.chromaticAberrationShader = love.graphics.newShader("chromaticAberration.glsl")
+     self.chromaticAberrationShader:send("aberrationAmount", 2)
+    
     -- Create a canvas for rendering
     self.canvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
+
+    -- Load background image
+    self.backgroundImage = love.graphics.newImage("background.png")
 end
 
 function drawCollisionBoxes()
@@ -43,7 +47,16 @@ function drawCollisionBoxes()
 end
 
 function GameScene:update(dt)
+    if self.blurDecreasing then
+        self.blurRadius = self.blurRadius - dt * 0.02  
+        if self.blurRadius <= 0 then
+            self.blurRadius = 0
+            self.blurDecreasing = false
+        end
+        return
+    end
     bird:update(dt)
+    
     for _, obstacle in ipairs(obstacles) do
         obstacle:update(dt)
         if not obstacle.passed and bird.x > obstacle.x + obstacle.width then
@@ -57,35 +70,40 @@ function GameScene:update(dt)
         stateManager:switch('death')
     end
 end
-
 function GameScene:draw()
-    love.graphics.setBackgroundColor(255, 255, 255)
-    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setBackgroundColor(0.239, 0.533, 0.659)
+    local scaleX = 0.5  
+    local scaleY = 0.5  
 
-    -- Render the scene to the canvas
+    local bgX = (VIRTUAL_WIDTH - self.backgroundImage:getWidth() * scaleX) / 2
+    local bgY = (VIRTUAL_HEIGHT - self.backgroundImage:getHeight() * scaleY)
+
+
     love.graphics.setCanvas(self.canvas)
     love.graphics.clear()
+
+    love.graphics.setColor(1, 1, 1, 0.5)
+    love.graphics.draw(self.backgroundImage, bgX, bgY, 0, scaleX, scaleY)
+    love.graphics.setColor(1, 1, 1, 1)
 
     bird:render()
     for _, obstacle in ipairs(obstacles) do
         obstacle:render()
     end
 
-    love.graphics.setCanvas()  -- Reset canvas
+    love.graphics.setCanvas() 
 
-    -- Apply fisheye shader and draw the canvas
-   -- love.graphics.setShader(self.fishEye)
-  --  love.graphics.setShader(self.edgeShader)
-   -- love.graphics.setShader(self.blurShader)
-  --  love.graphics.setShader(self.chromaticAberrationShader)
+  
+    self.blurShader:send("radius", self.blurRadius)
+    love.graphics.setShader(self.blurShader)
     love.graphics.draw(self.canvas, 0, 0)
-    love.graphics.setShader()  -- Reset shader
+    love.graphics.print("Score: " .. Score, 10, 10)
+    love.graphics.setShader() 
 
     -- drawCollisionBoxes()
 
-    love.graphics.setColor(0, 0, 0, 1)
-    love.graphics.print("Score: " .. Score, 10, 10)
 end
+
 
 function GameScene:keypressed(key)
     if key == 'space' then
@@ -94,6 +112,10 @@ function GameScene:keypressed(key)
 end
 
 function GameScene:mousepressed(x, y)
+    bird:jump()
+end
+
+function love.touchpressed(id, x, y, dx, dy, pressure)
     bird:jump()
 end
 
